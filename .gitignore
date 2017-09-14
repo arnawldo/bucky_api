@@ -2,3 +2,6 @@
 venv/
 __pycache__/
 bucky/__pycache__/
+/.coverage
+/bucky_api.egg-info/
+/.cache/
