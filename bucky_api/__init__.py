@@ -13,4 +13,8 @@ def create_app(config_name):
 
     db.init_app(app)
 
+    from bucky_api.resources.auth import auth_bp
+
+    app.register_blueprint(auth_bp, url_prefix='/api/v1.0')
+
     return app
