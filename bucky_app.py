@@ -2,8 +2,8 @@ import os
 
 from flask_migrate import Migrate
 
-from bucky import create_app, db
-from bucky.models import User
+from bucky_api import create_app, db
+from bucky_api.models import User
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 migrate = Migrate(app, db)

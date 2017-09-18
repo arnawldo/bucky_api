@@ -1,4 +1,4 @@
-from bucky import db
+from bucky_api import db
 
 
 class User(db.Model):

@@ -1,5 +1,5 @@
 import pytest
-from bucky import create_app
+from bucky_api import create_app
 
 
 @pytest.fixture
