@@ -1,9 +1,10 @@
 from flask import current_app
-from itsdangerous import Serializer
-from marshmallow import Schema, fields, validate
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from marshmallow import Schema, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from bucky_api import db
+
 
 ######## MODELS ########
 
@@ -68,6 +69,9 @@ class BucketList(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tasks = db.relationship('Task', backref='bucketlist', lazy='dynamic')
 
+    def __repr__(self):
+        return 'BucketList <{}>'.format(self.name)
+
 
 class Task(db.Model):
     """Class for task instances
@@ -84,23 +88,25 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bucketlist_id = db.Column(db.Integer, db.ForeignKey('bucketlists.id'))
 
+    def __repr__(self):
+        return 'Task <{}>'.format(self.description)
+
+
 ######## SCHEMAS ########
 # These are classes that will help in serializing db models,
 # deserializing and validating incoming json data
-
-class UserSchema(Schema):
+class TaskSchema(Schema):
     id = fields.Int(dump_only=True)
-    username = fields.Str(required=True)
-    password = fields.Str(load_only=True, required=True)
-    bucketlist = fields.Nested('BucketListSchema', many=True, exclude=('tasks',))
+    description = fields.Str(required=True)
 
 
 class BucketListSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
-    tasks = fields.Nested('TaskSchema', many=True, dump_only=True)
+    tasks = fields.Nested(TaskSchema, many=True, dump_only=True)
 
 
-class TaskSchema(Schema):
+class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    description = fields.Str(required=True)
+    username = fields.Str(required=True)
+    password = fields.Str(load_only=True, required=True)
