@@ -8,7 +8,7 @@ from bucky_api.models import BucketListSchema, BucketList
 from bucky_api.common import status
 from bucky_api.resources.auth import AuthRequiredResource
 
-# REGISTER BLUEPRINT
+# CREATE BLUEPRINT
 bucketlists_bp = Blueprint('bucketlists', __name__)
 bucket_api = Api(bucketlists_bp)
 

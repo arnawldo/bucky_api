@@ -7,7 +7,7 @@ from bucky_api import db
 from bucky_api.common import status
 from bucky_api.models import User, UserSchema
 
-# REGISTER BLUEPRINT
+# CREATE BLUEPRINT
 auth_bp = Blueprint('auth', __name__)
 auth_api = Api(auth_bp)
 
