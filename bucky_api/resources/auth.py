@@ -102,6 +102,7 @@ class UserResource(AuthRequiredResource):
                     "error": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
+# USER COLLECTION RESOURCE
 class UserCollectionResource(Resource):
     """User collection endpoint"""
 
