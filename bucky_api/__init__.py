@@ -15,8 +15,10 @@ def create_app(config_name):
 
     from bucky_api.resources.auth import auth_bp
     from bucky_api.resources.bucketlist import bucketlists_bp
+    from bucky_api.resources.task import tasks_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1.0')
     app.register_blueprint(bucketlists_bp, url_prefix='/api/v1.0')
+    app.register_blueprint(tasks_bp, url_prefix='/api/v1.0')
 
     return app
