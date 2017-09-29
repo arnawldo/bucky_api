@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/arnawldo/bucky_api.svg?branch=master)](https://travis-ci.org/arnawldo/bucky_api)
+[![Coverage Status](https://coveralls.io/repos/github/arnawldo/bucky_api/badge.svg)](https://coveralls.io/github/arnawldo/bucky_api)  
 # Bucky API
 
 ### An API to your number one to-do list application  
@@ -9,10 +11,17 @@ API Documentaion [here](https://jsapi.apiary.io/previews/buckyapi/reference)
 
 1. Install dependencies  
 `pip install -r requirements.txt`  
-2. Point flask to the application and database  
+2. Point flask to the application 
 `export FLASK_APP=bucky_app.py`  
-`export DEV_DATABASE_URL="postgresql://<username>:<password>@localhost/bucky_dev"`
- 
+
+3. Set path to database  
+- For development
+`export DEV_DATABASE_URL="postgresql://<username>:<password>@localhost/bucky_dev"`  
+- For production  
+`export DATABASE_URL="postgresql://<username>:<password>@localhost/bucky_dev"`  
+  Remember to set app config to production in `bucky_app.py`
+
+
 3. Initialize database  
 `flask db init`  
 `flask db migrate`  
