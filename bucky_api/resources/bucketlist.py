@@ -56,7 +56,7 @@ class BucketListResource(AuthRequiredResource):
             # serialize bucket-list object
             result = bucketlist_schema.dump(BucketList.query.get(bucketlist.id))
             return {"message": "Bucket-list modified",
-                    "Bucket-list": result.data}
+                    "bucketList": result.data}
 
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -117,7 +117,10 @@ class BucketListCollectionResource(AuthRequiredResource):
         try:
             db.session.add(bucketlist)
             db.session.commit()
-            return {"message": "Created bucket-list"}, status.HTTP_201_CREATED
+            # serialize bucket-list object
+            result = bucketlist_schema.dump(BucketList.query.get(bucketlist.id))
+            return {"message": "Created bucket-list",
+                    "bucketList": result.data}, status.HTTP_201_CREATED
 
         except SQLAlchemyError as e:
             db.session.rollback()
