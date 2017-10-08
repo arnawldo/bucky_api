@@ -127,5 +127,37 @@ class BucketListCollectionResource(AuthRequiredResource):
             return {"error": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
+# BUCKET-LIST SEARCH RESOURCE
+
+class BucketListSearchResource(AuthRequiredResource):
+    """
+    Collection endpoint for searching for bucket-lists
+    containing particular term
+
+    Methods:
+        get -- get all bucket-lists of current user matching query
+    """
+
+    def get(self, search_term):
+        bucketlist_paginator = BucketListPaginator(request, search_term=search_term)
+        result = bucketlist_paginator.paginate_query()
+        return result
+
+
+class BucketListLimitedCollectionResource(AuthRequiredResource):
+    """
+    Collection endpoint for bucket-lists with specified number of results per page
+
+    Methods:
+        get -- get all bucket-lists of current user
+    """
+
+    def get(self, limit):
+        bucketlist_paginator = BucketListPaginator(request, results_per_page=limit)
+        result = bucketlist_paginator.paginate_query()
+        return result
+
 bucket_api.add_resource(BucketListResource, '/bucketlists/<int:bucket_id>', endpoint='bucketlist')
+bucket_api.add_resource(BucketListSearchResource, '/bucketlists/search/<string:search_term>', endpoint='bucketlists/search')
+bucket_api.add_resource(BucketListLimitedCollectionResource, '/bucketlists/limit/<int:limit>', endpoint='bucketlists/limit')
 bucket_api.add_resource(BucketListCollectionResource, '/bucketlists/', endpoint='bucketlists')

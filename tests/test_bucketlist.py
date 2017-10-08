@@ -255,3 +255,51 @@ def test__delete_non_existent_bucketlist__fails(client_with_user_n_bkt):
                        ))
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert b'Bucket-list does not exist' in response.data
+
+
+# BUCKET-LIST SEARCH RESOURCE
+def test__get_bucketlists_with_search__succeeds(client_with_user):
+    """Make sure a user can retrieve matching bucketlists
+    in paginated format"""
+    # create bucket-lists
+    user = User.query.first()  # User <arny>
+    bucket_names = ('buck', 'buck 2', 'buck 3', 'buck 4', 'buck 5')
+    buckets = [BucketList(name=bucket_name, user=user)
+               for bucket_name in bucket_names]
+    db.session.add_all(buckets)
+    db.session.commit()
+    # ask for bucketlist with `3`
+    # should return one bucketlist
+    response = client_with_user.get(BUCKETLIST_ENDPOINT + 'search/' + str(3),
+                                    headers=get_api_headers('arny', 'passy'),
+                                    query_string={'page': 1},
+                                    content_type='application/json')
+    assert b'buck 3' in response.data
+    assert b'buck 2' not in response.data
+
+
+# BUCKET-LIST COLLECTION LIMITED RESOURCE
+def test__get_specific_number_of_bucketlists__succeeds(client_with_user):
+    """Make sure a user can retrieve limited number of
+    bucketlists in paginated format"""
+    # create bucket-lists
+    user = User.query.first()  # User <arny>
+    bucket_names = ('buck 1', 'buck 2', 'buck 3', 'buck 4', 'buck 5')
+    buckets = [BucketList(name=bucket_name, user=user)
+               for bucket_name in bucket_names]
+    db.session.add_all(buckets)
+    db.session.commit()
+    # ask for bucketlist with `3`
+    # should return one bucketlist
+    response = client_with_user.get(BUCKETLIST_ENDPOINT + 'limit/' + str(2),
+                                    headers=get_api_headers('arny', 'passy'),
+                                    query_string={'page': 1},
+                                    content_type='application/json')
+    assert b'buck 1' in response.data
+    assert b'buck 3' not in response.data
+    response = client_with_user.get(BUCKETLIST_ENDPOINT + 'limit/' + str(2),
+                                    headers=get_api_headers('arny', 'passy'),
+                                    query_string={'page': 3},
+                                    content_type='application/json')
+    assert b'buck 5' in response.data
+    assert b'buck 4' not in response.data

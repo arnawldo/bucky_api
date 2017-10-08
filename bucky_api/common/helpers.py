@@ -1,6 +1,7 @@
 from flask import current_app, url_for, g
+from sqlalchemy import and_
 
-from bucky_api.models import BucketList, BucketListSchema
+from bucky_api.models import BucketList, BucketListSchema, User
 
 
 class BucketListPaginator(object):
@@ -17,14 +18,17 @@ class BucketListPaginator(object):
 
     def __init__(self,
                  request,
+                 search_term=None,
+                 results_per_page = 3,
                  resource_endpoint='bucketlists.bucketlists',
                  resource_name='bucket-lists',
                  schema=BucketListSchema(many=True)):
         self.request = request
+        self.search_term = search_term
         self.resource_endpoint = resource_endpoint
         self.resource_name = resource_name
         self.schema = schema
-        self.results_per_page = current_app.config['BUCKETS_PER_PAGE']
+        self.results_per_page = results_per_page
 
     def paginate_query(self):
         """
@@ -35,7 +39,14 @@ class BucketListPaginator(object):
         """
         # default to page 1 if none is specified
         page = self.request.args.get('page', 1, type=int)
-        pagination = BucketList.query.filter_by(user=g.current_user).paginate(
+        if self.search_term:
+            pagination = BucketList.query.filter(and_(User.username==g.current_user.username,
+                                                      BucketList.name.like('%'+self.search_term+'%'))).paginate(
+                page,
+                per_page=self.results_per_page,
+                error_out=False)
+        else:
+            pagination = BucketList.query.filter_by(user=g.current_user).paginate(
             page,
             per_page=self.results_per_page,
             error_out=False)
