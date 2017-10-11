@@ -1,0 +1,1 @@
+web: gunicorn bucky_app:app
