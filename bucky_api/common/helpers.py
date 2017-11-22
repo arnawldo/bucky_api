@@ -40,8 +40,7 @@ class BucketListPaginator(object):
         # default to page 1 if none is specified
         page = self.request.args.get('page', 1, type=int)
         if self.search_term:
-            pagination = BucketList.query.filter(and_(User.username==g.current_user.username,
-                                                      BucketList.name.like('%'+self.search_term+'%'))).paginate(
+            pagination = BucketList.query.filter_by(user=g.current_user).filter(BucketList.name.like('%'+self.search_term+'%')).paginate(
                 page,
                 per_page=self.results_per_page,
                 error_out=False)
