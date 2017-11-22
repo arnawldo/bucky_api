@@ -1,4 +1,6 @@
-from flask import g, request, Blueprint, jsonify
+from functools import wraps
+
+from flask import g, request, Blueprint, make_response
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource, Api
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,8 +13,27 @@ from bucky_api.models import User, UserSchema
 auth_bp = Blueprint('auth', __name__)
 auth_api = Api(auth_bp)
 
+
+# CUSTOM HTTP BASIC AUTH CLASS
+class CustomHTTPBasicAuth(HTTPBasicAuth):
+    def error_handler(self, f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            res = f(*args, **kwargs)
+            res = make_response(res)
+            if res.status_code == 200:
+                # if user didn't set status code, use 401
+                res.status_code = 401
+            if 'WWW-Authenticate' not in res.headers.keys():
+                res.headers['WWW-Authenticate'] = 'xBasic realm="Access to the bucky"'
+            return res
+
+        self.auth_error_callback = decorated
+        return decorated
+
+
 # SETUP AUTHENTICATION RESOURCE
-auth = HTTPBasicAuth()
+auth = CustomHTTPBasicAuth()
 
 
 @auth.verify_password
@@ -20,18 +41,23 @@ def verify_credentials(username_or_token, password):
     """callback func to be used by resources that need authentication"""
     if not username_or_token:
         # impossible to verify
+        print("impossible to verify")
         return False
     if not password:
         # using token
         g.current_user = User.verify_auth_token(username_or_token)
         g.token_used = True
+        print("token was used")
         return g.current_user is not None
         # using username and password
     user = User.query.filter_by(username=username_or_token).first()
+    print("got user :", user)
     if user and user.verify_password(password):
         g.current_user = user
         g.token_used = False
+        print("user was verified")
         return True
+    print("wrong credentials")
     return False
 
 
@@ -113,6 +139,8 @@ class UserCollectionResource(Resource):
 
         # validate and deserialize input
         data, errors = user_schema.load(json_data)
+        print(data)
+        print(errors)
         if errors:
             return errors, status.HTTP_422_UNPROCESSABLE_ENTITY
 
