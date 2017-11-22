@@ -41,23 +41,18 @@ def verify_credentials(username_or_token, password):
     """callback func to be used by resources that need authentication"""
     if not username_or_token:
         # impossible to verify
-        print("impossible to verify")
         return False
     if not password:
         # using token
         g.current_user = User.verify_auth_token(username_or_token)
         g.token_used = True
-        print("token was used")
         return g.current_user is not None
         # using username and password
     user = User.query.filter_by(username=username_or_token).first()
-    print("got user :", user)
     if user and user.verify_password(password):
         g.current_user = user
         g.token_used = False
-        print("user was verified")
         return True
-    print("wrong credentials")
     return False
 
 
@@ -139,8 +134,6 @@ class UserCollectionResource(Resource):
 
         # validate and deserialize input
         data, errors = user_schema.load(json_data)
-        print(data)
-        print(errors)
         if errors:
             return errors, status.HTTP_422_UNPROCESSABLE_ENTITY
 
