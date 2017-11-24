@@ -6,3 +6,4 @@ marshmallow==2.13.6
 flask-httpauth==3.2.3
 flask-restful==0.3.6
 gunicorn==19.7.1
+Flask-Cors==3.0.3
